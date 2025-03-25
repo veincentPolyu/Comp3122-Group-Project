@@ -3,8 +3,9 @@ import { useState } from 'react';
 import UrlInput from './components/UrlInput';
 import Map from './components/Map';
 import Itinerary from './components/Itinerary';
-import { Location } from './services/api';
+import { Location } from './types/location';
 import { theme } from './theme';
+import React from 'react';
 
 function App() {
   const [locations, setLocations] = useState<Location[]>([]);

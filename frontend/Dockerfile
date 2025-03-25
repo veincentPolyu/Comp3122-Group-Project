@@ -2,12 +2,21 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Copy package files first for better caching
 COPY package*.json ./
 
-RUN npm install
+# Clean install dependencies
+RUN npm install --force
 
+# Copy the rest of the application
 COPY . .
 
-EXPOSE 5173
+# Set environment variables
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
 
-CMD ["npm", "run", "dev", "--", "--host"]
+EXPOSE 3000
+
+# Development command
+CMD ["npm", "run", "dev"]
