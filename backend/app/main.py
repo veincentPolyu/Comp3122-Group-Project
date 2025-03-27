@@ -26,18 +26,19 @@ async def startup_db_client():
 
 @app.post("/api/process-url")
 async def process_url(url_input: UrlInput):
-    extractor = LocationExtractor(os.getenv("YOUTUBE_API_KEY"))
+    extractor = LocationExtractor(
+        youtube_api_key=os.getenv("YOUTUBE_API_KEY"),
+        openai_api_key=os.getenv("OPENAI_API_KEY")
+    )
     
-    if "youtube.com" in url_input.url:
-        locations = await extractor.extract_from_youtube(url_input.url)
-    else:
-        locations = await extractor.extract_from_blog(url_input.url)
+    result = await extractor.process_url(url_input.url)
     
-    # Store locations in MongoDB
-    for location in locations:
-        await app.mongodb.locations.insert_one(location)
+    # Store locations in MongoDB if extraction was successful
+    if result["extracted_locations"]["success"]:
+        for location in result["extracted_locations"]["locations"]:
+            await app.mongodb.locations.insert_one(location)
     
-    return {"status": "completed", "locations": locations}
+    return result
 
 @app.get("/api/locations/{location_id}")
 async def get_location(location_id: str):
