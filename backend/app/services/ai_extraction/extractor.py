@@ -8,7 +8,9 @@ from dotenv import load_dotenv
 import json
 import os
 from pathlib import Path
-import openai  # Correct import
+import openai  
+
+
 
 load_dotenv()
 
@@ -16,7 +18,7 @@ class LocationExtractor:
     def __init__(self, youtube_api_key: str, openai_api_key: str):
         self.youtube = build('youtube', 'v3', developerKey=youtube_api_key)
         openai.api_key = openai_api_key  # Set the API key
-        self.base_url = "https://xiaoai.plus/v1/chat/completions"
+        self.base_url = "https://models.inference.ai.azure.com"
         # Load mock data
         self.mock_data = self._load_mock_data()
 
@@ -138,20 +140,41 @@ class LocationExtractor:
         """
 
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",  # Ensure this is the correct model name
+            model_name = "gpt-4o-mini"
+            client = openai.OpenAI(
+            base_url=self.base_url,
+            api_key=openai.api_key,
+            )
+            response = client.chat.completions.create(
                 messages=[
                     {
-                        "role": "system", 
-                        "content": "You are a JSON response bot. Provide the information in JSON format."
+                        "role": "system",
+                        "content": "You are a JSON response bot. Provide the information in JSON format.",
                     },
                     {
-                        "role": "user", 
-                        "content": prompt.format(text=text[:4000])
+                        "role": "user",
+                        "content": prompt.format(text=text[:4000]),
                     }
                 ],
-                temperature=0.1
+                temperature=1.0,
+                top_p=1.0,
+                max_tokens=1000,
+                model=model_name,
             )
+            # response = openai.ChatCompletion.create(
+            #     model="gpt-4o-mini",  # Ensure this is the correct model name
+            #     messages=[
+            #         {
+            #             "role": "system", 
+            #             "content": "You are a JSON response bot. Provide the information in JSON format."
+            #         },
+            #         {
+            #             "role": "user", 
+            #             "content": prompt.format(text=text[:4000])
+            #         }
+            #     ],
+            #     temperature=0.1
+            # )
             
             # Log the full response object
             print(f"Full API response object: {response}")
@@ -170,6 +193,8 @@ class LocationExtractor:
                 return []
                 
         except Exception as e:
+            print(f"BaseURL:{str(self.base_url)}")
+            print(f"Token:{str(openai.api_key)}")
             print(f"LLM processing error: {str(e)}")
             print(f"Full error details: {repr(e)}")
             return []
