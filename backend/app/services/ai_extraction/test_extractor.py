@@ -44,18 +44,9 @@ async def test_extractor():
     if not openai_api_key:
         raise ValueError("OPENAI_API_KEY not found in environment variables")
 
-    # Get API keys from environment variables
-    youtube_api_key = os.getenv("YOUTUBE_API_KEY")
-    github_api_key = os.getenv("GITHUB_API_KEY")
-    if not youtube_api_key:
-        raise ValueError("YOUTUBE_API_KEY not found in environment variables")
-    if not github_api_key:
-        raise ValueError("GITHUB_API_KEY not found in environment variables")
-
     extractor = LocationExtractor(
-        youtube_api_key=youtube_api_key,
-        github_api_key=github_api_key,
-        mock_data_path=str(mock_data_path)
+        youtube_api_key="dummy_youtube_api_key",
+        openai_api_key=openai_api_key
     )
 
     try:
@@ -96,4 +87,4 @@ async def test_extractor():
             test_file_path.unlink()
 
 if __name__ == "__main__":
-    asyncio.run(test_extractor())
+    asyncio.run(test_extractor()) 
