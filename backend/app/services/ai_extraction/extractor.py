@@ -8,20 +8,23 @@ from dotenv import load_dotenv
 import json
 import os
 from pathlib import Path
-import openai  # Correct import
 
 load_dotenv()
 
 class LocationExtractor:
-    def __init__(self, youtube_api_key: str, openai_api_key: str):
-        self.youtube = build('youtube', 'v3', developerKey=youtube_api_key)
-        openai.api_key = openai_api_key  # Set the API key
-        self.base_url = "https://xiaoai.plus/v1/chat/completions"
-        # Load mock data
+    def __init__(self, youtube_api_key: str = None, github_api_key: str = None, mock_data_path=None):
+        self.youtube = build('youtube', 'v3', developerKey=youtube_api_key) if youtube_api_key else None
+        self.github_api_key = github_api_key
+        self.endpoint = "https://models.inference.ai.azure.com"
+        self.model_name = "gpt-4o-mini"
+        self.mock_data_path = mock_data_path
         self.mock_data = self._load_mock_data()
 
     def _load_mock_data(self) -> Dict:
         """Load mock data from api_responses.json"""
+        if self.mock_data_path:
+            with open(self.mock_data_path, 'r') as f:
+                return json.load(f)
         mock_data_path = Path(__file__).parent.parent.parent / 'mock_data' / 'api_responses.json'
         print(f"Loading mock data from: {mock_data_path}")
         with open(mock_data_path, 'r') as f:
@@ -75,6 +78,9 @@ class LocationExtractor:
     async def extract_from_web(self, url: str) -> Dict:
         """Extract locations from web content"""
         try:
+            if self.mock_data_path:
+                with open(self.mock_data_path, 'r') as f:
+                    return json.load(f)
             response = requests.get(url)
             response.raise_for_status()
             
@@ -130,7 +136,12 @@ class LocationExtractor:
             }
 
     async def _process_with_llm(self, text: str) -> List[Dict]:
-        """Process text with GPT to extract locations"""
+        """Process text with GitHub's LLM to extract locations"""
+        headers = {
+            "Authorization": f"Bearer {self.github_api_key}",
+            "Content-Type": "application/json"
+        }
+
         prompt = """
         Extract travel-related locations from the following text and provide the information in JSON format. Include details such as the name, type, details, and context of each location.
 
@@ -138,35 +149,42 @@ class LocationExtractor:
         """
 
         try:
-            response = openai.ChatCompletion.create(
-                model="gpt-4",  # Ensure this is the correct model name
-                messages=[
+            payload = {
+                "model": self.model_name,
+                "messages": [
                     {
-                        "role": "system", 
+                        "role": "system",
                         "content": "You are a JSON response bot. Provide the information in JSON format."
                     },
                     {
-                        "role": "user", 
+                        "role": "user",
                         "content": prompt.format(text=text[:4000])
                     }
                 ],
-                temperature=0.1
+                "temperature": 0.1
+            }
+
+            response = requests.post(
+                f"{self.endpoint}/v1/chat/completions",
+                headers=headers,
+                json=payload
             )
             
-            # Log the full response object
-            print(f"Full API response object: {response}")
+            response.raise_for_status()
+            result = response.json()
             
-            # Safely get the message content
+            # Log the full response object
+            print(f"Full API response object: {result}")
+            
             try:
-                content = response.choices[0].message.content.strip()
+                content = result['choices'][0]['message']['content'].strip()
                 print(f"\nRaw content: {content}")
                 
                 # Attempt to parse the JSON
                 locations = json.loads(content)
                 return self._format_locations(locations)
-            except json.JSONDecodeError as e:
-                print(f"JSON parsing error: {str(e)}")
-                print(f"Failed content: {content}")
+            except (json.JSONDecodeError, KeyError) as e:
+                print(f"Error processing response: {str(e)}")
                 return []
                 
         except Exception as e:

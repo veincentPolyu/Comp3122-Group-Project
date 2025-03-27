@@ -35,5 +35,17 @@
     "success": true,
     "place_id": "loc1",
     "updated_fields": {}
-  }
+  },
+  "youtube_comments": [
+    {
+      "text": "Great video! I visited this place in New York last summer.",
+      "likes": 150,
+      "replies": 5
+    },
+    {
+      "text": "The restaurant in Tokyo was amazing!",
+      "likes": 200,
+      "replies": 8
+    }
+  ]
 }
