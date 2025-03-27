@@ -6,58 +6,34 @@
       {
         "id": "loc1",
         "name": "Tsuta Japanese Soba Noodles",
-        "address": "1 Chome-14-1 Sugamo, Toshima City, Tokyo",
         "category": "restaurant",
+        "description": "First ramen restaurant to receive a Michelin star. Visited during a trip to Tokyo.",
         "coordinates": {
           "lat": 35.733772,
           "lng": 139.739750
         },
-        "business_hours": [
-          "Mon-Fri: 11:00-15:00",
-          "Sat-Sun: 10:00-15:00"
-        ],
-        "busy_periods": [
-          "12:00-13:30",
-          "18:00-19:30"
-        ],
-        "rating": 4.5,
-        "price_level": 2,
-        "photos": [
-          "https://example.com/tsuta1.jpg"
-        ],
-        "description": "Michelin-starred ramen restaurant",
-        "source": {
-          "url": "https://example-blog.com/tokyo-trip",
-          "type": "blog",
-          "title": "My Tokyo Food Adventure",
-          "timestamp": "2023-12-01T12:00:00Z"
+        "tags": ["ramen", "michelin"]
+      },
+      {
+        "id": "loc2",
+        "name": "Sensoji Temple",
+        "category": "temple",
+        "description": "One of Tokyo's oldest Buddhist temples. Explored after lunch.",
+        "coordinates": {
+          "lat": 35.714765,
+          "lng": 139.796655
         },
-        "tags": ["ramen", "michelin", "lunch"]
+        "tags": ["temple", "historic"]
       }
     ]
   },
   "duplicate_check": {
     "success": true,
-    "duplicates": [
-      {
-        "original": "loc1",
-        "duplicate": "loc2",
-        "similarity_score": 0.95
-      }
-    ]
+    "duplicates": []
   },
   "place_details": {
     "success": true,
     "place_id": "loc1",
-    "updated_fields": {
-      "business_hours": [
-        "Mon-Fri: 11:00-15:00",
-        "Sat-Sun: 10:00-15:00"
-      ],
-      "busy_periods": [
-        "12:00-13:30",
-        "18:00-19:30"
-      ]
-    }
+    "updated_fields": {}
   }
 }

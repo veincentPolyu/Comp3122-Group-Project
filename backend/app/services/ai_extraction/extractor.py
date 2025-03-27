@@ -3,17 +3,29 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
-from openai import OpenAI  # Updated import
-from youtube_transcript_api import YouTubeTranscriptApi
 import urllib.parse
 from dotenv import load_dotenv
+import json
+import os
+from pathlib import Path
+import openai  # Correct import
 
-load_dotenv()  # Add this at the top of the file
+load_dotenv()
 
 class LocationExtractor:
     def __init__(self, youtube_api_key: str, openai_api_key: str):
         self.youtube = build('youtube', 'v3', developerKey=youtube_api_key)
-        self.client = OpenAI(api_key=openai_api_key)  # Updated OpenAI client initialization
+        openai.api_key = openai_api_key  # Set the API key
+        self.base_url = "https://xiaoai.plus/v1/chat/completions"
+        # Load mock data
+        self.mock_data = self._load_mock_data()
+
+    def _load_mock_data(self) -> Dict:
+        """Load mock data from api_responses.json"""
+        mock_data_path = Path(__file__).parent.parent.parent / 'mock_data' / 'api_responses.json'
+        print(f"Loading mock data from: {mock_data_path}")
+        with open(mock_data_path, 'r') as f:
+            return json.load(f)
 
     async def process_url(self, url: str) -> Dict:
         """Main entry point - processes any URL and returns locations"""
@@ -74,7 +86,6 @@ class LocationExtractor:
             timestamp = timestamp['content'] if timestamp else ""
 
             # Extract main content
-            # Try different common content containers
             content = ""
             for container in ['article', 'main', '.post-content', '.entry-content']:
                 if content_elem := soup.select_one(container):
@@ -88,74 +99,104 @@ class LocationExtractor:
             # Process with LLM
             locations = await self._process_with_llm(content)
             
-            return self._format_response(
-                url=url,
-                locations=locations,
-                source_type="blog",
-                title=title,
-                timestamp=timestamp
-            )
+            return {
+                "extracted_locations": {
+                    "success": True,
+                    "url": url,
+                    "locations": locations
+                },
+                "duplicate_check": {
+                    "success": True,
+                    "duplicates": []  # Implement duplicate checking logic if needed
+                },
+                "place_details": {
+                    "success": True,
+                    "place_id": locations[0]["id"] if locations else None,
+                    "updated_fields": {}  # Implement updated fields logic if needed
+                }
+            }
 
         except Exception as e:
-            return self._create_error_response(url, str(e))
+            print(f"Error processing URL {url}: {str(e)}")
+            return {
+                "extracted_locations": {
+                    "success": False,
+                    "url": url,
+                    "locations": [],
+                    "error": str(e)
+                },
+                "duplicate_check": {"success": False, "duplicates": []},
+                "place_details": {"success": False, "place_id": None, "updated_fields": {}}
+            }
 
     async def _process_with_llm(self, text: str) -> List[Dict]:
         """Process text with GPT to extract locations"""
         prompt = """
-        Extract travel-related locations from the following text. For each location, provide:
-        1. The full name of the location
-        2. The type of location (city, restaurant, landmark, etc.)
-        3. Any mentioned details about the location
-        4. Any context about why someone might visit
+        Extract travel-related locations from the following text and provide the information in JSON format. Include details such as the name, type, details, and context of each location.
 
-        Format the response as a JSON array of locations.
-        
-        Text to analyze:
-        {text}
+        Text: {text}
         """
 
         try:
-            # Changed model from "gpt-4" to "gpt-3.5-turbo"
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+            response = openai.ChatCompletion.create(
+                model="gpt-4",  # Ensure this is the correct model name
                 messages=[
-                    {"role": "system", "content": "You are a travel location extraction specialist."},
-                    {"role": "user", "content": prompt.format(text=text[:4000])}  # Limit text length
-                ]
+                    {
+                        "role": "system", 
+                        "content": "You are a JSON response bot. Provide the information in JSON format."
+                    },
+                    {
+                        "role": "user", 
+                        "content": prompt.format(text=text[:4000])
+                    }
+                ],
+                temperature=0.1
             )
             
-            locations = self._parse_gpt_response(response.choices[0].message.content)
-            return locations
-
+            # Log the full response object
+            print(f"Full API response object: {response}")
+            
+            # Safely get the message content
+            try:
+                content = response.choices[0].message.content.strip()
+                print(f"\nRaw content: {content}")
+                
+                # Attempt to parse the JSON
+                locations = json.loads(content)
+                return self._format_locations(locations)
+            except json.JSONDecodeError as e:
+                print(f"JSON parsing error: {str(e)}")
+                print(f"Failed content: {content}")
+                return []
+                
         except Exception as e:
             print(f"LLM processing error: {str(e)}")
+            print(f"Full error details: {repr(e)}")
             return []
 
-    def _parse_gpt_response(self, gpt_response: str) -> List[Dict]:
-        """Parse GPT response into structured location data"""
-        try:
-            # Assuming GPT returns JSON-formatted string
-            import json
-            locations = json.loads(gpt_response)
-            
-            # Format each location according to our API spec
-            formatted_locations = []
-            for idx, loc in enumerate(locations):
-                formatted_loc = {
-                    "id": f"loc{idx + 1}",
-                    "name": loc.get("name", ""),
-                    "category": loc.get("type", "point_of_interest"),
-                    "description": loc.get("details", ""),
-                    "coordinates": {"lat": None, "lng": None},  # Would need geocoding
-                    "tags": [loc.get("type", "travel")] if loc.get("type") else ["travel"]
-                }
-                formatted_locations.append(formatted_loc)
-            
-            return formatted_locations
-
-        except Exception as e:
-            print(f"GPT response parsing error: {str(e)}")
-            return []
+    def _format_locations(self, locations: List[Dict]) -> List[Dict]:
+        """Format the locations according to the API spec"""
+        formatted_locations = []
+        for idx, loc in enumerate(locations):
+            if isinstance(loc, dict):  # Ensure loc is a dictionary
+                try:
+                    formatted_loc = {
+                        "id": f"loc{idx + 1}",
+                        "name": loc.get("name", "Unknown Location"),
+                        "category": loc.get("type", "point_of_interest"),
+                        "description": f"{loc.get('details', '')} {loc.get('context', '')}".strip(),
+                        "coordinates": {"lat": None, "lng": None},
+                        "tags": [loc.get("type", "travel")] if loc.get("type") else ["travel"]
+                    }
+                    formatted_locations.append(formatted_loc)
+                except Exception as e:
+                    print(f"Error formatting location {idx}: {str(e)}")
+                    print(f"Location data: {loc}")
+                    continue
+            else:
+                print(f"Skipping non-dictionary location at index {idx}: {loc}")
+                
+        return formatted_locations
 
     def _extract_video_id(self, url: str) -> str:
         """Extract YouTube video ID from URL"""
@@ -178,7 +219,7 @@ class LocationExtractor:
             },
             "duplicate_check": {
                 "success": True,
-                "duplicates": []  # Would need implementation
+                "duplicates": []
             },
             "place_details": {
                 "success": True,
