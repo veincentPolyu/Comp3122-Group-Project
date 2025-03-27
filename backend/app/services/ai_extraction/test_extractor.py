@@ -20,10 +20,10 @@ async def test_extractor():
         mock_data = json.load(f)
 
     test_url = "https://example-blog.com/tokyo-trip"
-    test_blog_content = f"""
-    During my trip to Tokyo, I had an amazing experience at {mock_data['extracted_locations']['locations'][0]['name']}.
-    Located in {mock_data['extracted_locations']['locations'][0]['address']}, this place is truly special.
-    The restaurant is in Toshima City, which is a great area to explore in Tokyo.
+    test_blog_content = """
+    During my amazing trip to Tokyo, I visited the famous Tsuta Japanese Soba Noodles restaurant.
+    It's located in Sugamo, Toshima City, and it's the first ramen restaurant to receive a Michelin star.
+    After lunch, I explored the beautiful Sensoji Temple in Asakusa, one of Tokyo's oldest Buddhist temples.
     """
 
     # Create a temporary HTML file with the test content
