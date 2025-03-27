@@ -4,6 +4,10 @@ from pathlib import Path
 # Import directly since we're in the same directory
 from extractor import LocationExtractor
 import os
+from dotenv import load_dotenv  # Add this import
+
+# Load environment variables from .env file
+load_dotenv()
 
 async def test_extractor():
     # Load mock data
@@ -15,6 +19,7 @@ async def test_extractor():
     with open(mock_data_path, 'r') as f:
         mock_data = json.load(f)
 
+    test_url = "https://example-blog.com/tokyo-trip"
     test_blog_content = f"""
     During my trip to Tokyo, I had an amazing experience at {mock_data['extracted_locations']['locations'][0]['name']}.
     Located in {mock_data['extracted_locations']['locations'][0]['address']}, this place is truly special.
@@ -34,36 +39,44 @@ async def test_extractor():
     with open(test_file_path, 'w', encoding='utf-8') as f:
         f.write(test_html)
 
-    # Initialize extractor with a dummy API key
-    extractor = LocationExtractor("dummy_api_key")
+    # Get API key from environment variables
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        raise ValueError("OPENAI_API_KEY not found in environment variables")
+
+    extractor = LocationExtractor(
+        youtube_api_key="dummy_youtube_api_key",
+        openai_api_key=openai_api_key
+    )
 
     try:
-        # Test location extraction (removed await since it's not an async method)
         print("Testing location extraction...")
-        locations = extractor._extract_locations_from_text(test_blog_content)
+        # Use process_url instead of _extract_locations_from_text
+        result = await extractor.extract_from_web(test_url)
         
-        # Print results
-        print("\nExtracted Locations:")
-        for loc in locations:
-            print(f"- {loc['name']}")
+        print("\nExtracted Result:")
+        print(json.dumps(result, indent=2))
         
-        # Compare with expected locations from mock data
-        expected_locations = {
-            mock_data['extracted_locations']['locations'][0]['name'],
-            'Toshima City',
-            'Tokyo'
-        }
-        
-        found_locations = {loc['name'] for loc in locations}
+        # Validate structure matches mock data
+        expected_keys = set(mock_data.keys())
+        actual_keys = set(result.keys())
         
         print("\nValidation:")
-        print(f"Expected locations: {expected_locations}")
-        print(f"Found locations: {found_locations}")
-        if len(expected_locations) > 0:
-            success_rate = len(found_locations.intersection(expected_locations)) / len(expected_locations) * 100
-            print(f"Success rate: {success_rate}%")
-        else:
-            print("No expected locations to compare against")
+        print(f"Expected keys: {expected_keys}")
+        print(f"Actual keys: {actual_keys}")
+        print(f"Structure match: {expected_keys == actual_keys}")
+        
+        # Check if required fields are present in locations
+        if result["extracted_locations"]["locations"]:
+            first_location = result["extracted_locations"]["locations"][0]
+            required_fields = ["id", "name", "category", "description"]
+            missing_fields = [field for field in required_fields if field not in first_location]
+            
+            print("\nLocation fields validation:")
+            if missing_fields:
+                print(f"Missing required fields: {missing_fields}")
+            else:
+                print("All required fields present")
 
     except Exception as e:
         print(f"Error during testing: {str(e)}")

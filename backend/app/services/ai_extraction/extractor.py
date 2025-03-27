@@ -1,88 +1,201 @@
 from typing import List, Dict
 import re
 import requests
-from googleapiclient.discovery import build
 from bs4 import BeautifulSoup
+from googleapiclient.discovery import build
+from openai import OpenAI  # Updated import
+from youtube_transcript_api import YouTubeTranscriptApi
+import urllib.parse
+from dotenv import load_dotenv
+
+load_dotenv()  # Add this at the top of the file
 
 class LocationExtractor:
-    def __init__(self, youtube_api_key: str):
+    def __init__(self, youtube_api_key: str, openai_api_key: str):
         self.youtube = build('youtube', 'v3', developerKey=youtube_api_key)
+        self.client = OpenAI(api_key=openai_api_key)  # Updated OpenAI client initialization
 
-    async def extract_from_youtube(self, video_id: str) -> List[Dict]:
-        captions = await self._get_video_captions(video_id)
-        if not captions.get('items'):
+    async def process_url(self, url: str) -> Dict:
+        """Main entry point - processes any URL and returns locations"""
+        if "youtube.com" in url or "youtu.be" in url:
+            return await self.extract_from_youtube(url)
+        else:
+            return await self.extract_from_web(url)
+
+    async def extract_from_youtube(self, url: str) -> Dict:
+        """Extract locations from YouTube video"""
+        video_id = self._extract_video_id(url)
+        if not video_id:
+            return self._create_error_response(url, "Invalid YouTube URL")
+
+        try:
+            # Get video transcript
+            transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+            full_text = " ".join([entry['text'] for entry in transcript_list])
+            
+            # Get video metadata
+            video_info = self.youtube.videos().list(
+                part="snippet",
+                id=video_id
+            ).execute()
+
+            if 'items' in video_info:
+                video_title = video_info['items'][0]['snippet']['title']
+                timestamp = video_info['items'][0]['snippet']['publishedAt']
+            else:
+                video_title = "Unknown Title"
+                timestamp = ""
+
+            # Process with LLM
+            locations = await self._process_with_llm(full_text)
+            
+            return self._format_response(
+                url=url,
+                locations=locations,
+                source_type="youtube",
+                title=video_title,
+                timestamp=timestamp
+            )
+
+        except Exception as e:
+            return self._create_error_response(url, str(e))
+
+    async def extract_from_web(self, url: str) -> Dict:
+        """Extract locations from web content"""
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            # Extract title and timestamp if available
+            title = soup.title.string if soup.title else "Unknown Title"
+            timestamp = soup.find('meta', {'property': 'article:published_time'})
+            timestamp = timestamp['content'] if timestamp else ""
+
+            # Extract main content
+            # Try different common content containers
+            content = ""
+            for container in ['article', 'main', '.post-content', '.entry-content']:
+                if content_elem := soup.select_one(container):
+                    content = content_elem.get_text()
+                    break
+            
+            if not content:
+                # Fallback to all paragraphs
+                content = " ".join([p.get_text() for p in soup.find_all('p')])
+
+            # Process with LLM
+            locations = await self._process_with_llm(content)
+            
+            return self._format_response(
+                url=url,
+                locations=locations,
+                source_type="blog",
+                title=title,
+                timestamp=timestamp
+            )
+
+        except Exception as e:
+            return self._create_error_response(url, str(e))
+
+    async def _process_with_llm(self, text: str) -> List[Dict]:
+        """Process text with GPT to extract locations"""
+        prompt = """
+        Extract travel-related locations from the following text. For each location, provide:
+        1. The full name of the location
+        2. The type of location (city, restaurant, landmark, etc.)
+        3. Any mentioned details about the location
+        4. Any context about why someone might visit
+
+        Format the response as a JSON array of locations.
+        
+        Text to analyze:
+        {text}
+        """
+
+        try:
+            # Changed model from "gpt-4" to "gpt-3.5-turbo"
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a travel location extraction specialist."},
+                    {"role": "user", "content": prompt.format(text=text[:4000])}  # Limit text length
+                ]
+            )
+            
+            locations = self._parse_gpt_response(response.choices[0].message.content)
+            return locations
+
+        except Exception as e:
+            print(f"LLM processing error: {str(e)}")
             return []
 
-        # Extract text from the captions
-        caption_texts = []
-        for item in captions['items']:
-            caption_id = item['id']
-            caption_details = await self._get_caption_details(video_id, caption_id)
-            caption_texts.append(caption_details.get('body', ''))
+    def _parse_gpt_response(self, gpt_response: str) -> List[Dict]:
+        """Parse GPT response into structured location data"""
+        try:
+            # Assuming GPT returns JSON-formatted string
+            import json
+            locations = json.loads(gpt_response)
+            
+            # Format each location according to our API spec
+            formatted_locations = []
+            for idx, loc in enumerate(locations):
+                formatted_loc = {
+                    "id": f"loc{idx + 1}",
+                    "name": loc.get("name", ""),
+                    "category": loc.get("type", "point_of_interest"),
+                    "description": loc.get("details", ""),
+                    "coordinates": {"lat": None, "lng": None},  # Would need geocoding
+                    "tags": [loc.get("type", "travel")] if loc.get("type") else ["travel"]
+                }
+                formatted_locations.append(formatted_loc)
+            
+            return formatted_locations
 
-        # Combine all captions into a single string
-        full_text = ' '.join(caption_texts)
-
-        # Extract locations from the full text
-        locations = self._extract_locations_from_text(full_text)
-        return locations
-
-    async def extract_from_blog(self, url: str) -> List[Dict]:
-        response = requests.get(url)
-        if response.status_code != 200:
+        except Exception as e:
+            print(f"GPT response parsing error: {str(e)}")
             return []
 
-        soup = BeautifulSoup(response.text, 'html.parser')
+    def _extract_video_id(self, url: str) -> str:
+        """Extract YouTube video ID from URL"""
+        parsed_url = urllib.parse.urlparse(url)
+        if parsed_url.hostname in ['www.youtube.com', 'youtube.com']:
+            query_params = urllib.parse.parse_qs(parsed_url.query)
+            return query_params.get('v', [None])[0]
+        elif parsed_url.hostname == 'youtu.be':
+            return parsed_url.path[1:]
+        return None
 
-        # Assuming blog content is within <p> tags
-        paragraphs = soup.find_all('p')
-        blog_text = ' '.join([p.get_text() for p in paragraphs])
-
-        # Extract locations from the blog text
-        locations = self._extract_locations_from_text(blog_text)
-        return locations
-
-    async def _get_video_captions(self, video_id: str):
-        request = self.youtube.captions().list(
-            part="snippet",
-            videoId=video_id
-        )
-        return request.execute()
-
-    async def _get_caption_details(self, video_id: str, caption_id: str) -> Dict:
-        request = self.youtube.captions().download(id=caption_id)
-        response = request.execute()
-        return {'body': response.decode('utf-8')}
-
-    def _extract_locations_from_text(self, text: str) -> List[Dict]:
-        # Enhanced regex pattern for better location detection
-        location_patterns = [
-            # Cities and countries
-            r'\b(?:[A-Z][a-z]+(?:[\s-][A-Z][a-z]+)*)\b(?=.*?(?:city|capital|country|town|village|province|state))',
-            # Landmarks and attractions
-            r'\b(?:[A-Z][a-z]+(?:[\s-][A-Z][a-z]+)*)\b(?=.*?(?:Park|Museum|Temple|Castle|Palace|Bridge|Mountain|Lake|Beach))',
-            # General capitalized location names
-            r'\b(?:[A-Z][a-z]+(?:[\s-][A-Z][a-z]+)*),\s*(?:[A-Z][a-z]+(?:[\s-][A-Z][a-z]+)*)\b'
-        ]
-        
-        locations = set()  # Using set to avoid duplicates
-        for pattern in location_patterns:
-            matches = re.finditer(pattern, text, re.MULTILINE)
-            for match in matches:
-                location_name = match.group(0)
-                # Skip common false positives
-                if location_name not in ['I', 'The', 'A', 'An', 'This', 'That']:
-                    locations.add(location_name)
-        
-        # Convert matches to structured data
-        return [
-            {
-                'name': location,
-                'description': f'Location mentioned in content',
-                'confidence': 'high' if any(keyword in text[max(0, text.find(location)-50):text.find(location)+50] 
-                                         for keyword in ['visit', 'travel', 'located', 'destination', 'tour'])
-                             else 'medium',
-                'context': text[max(0, text.find(location)-100):text.find(location)+100].strip()
+    def _format_response(self, url: str, locations: List[Dict], 
+                        source_type: str, title: str, timestamp: str) -> Dict:
+        """Format the final API response"""
+        return {
+            "extracted_locations": {
+                "success": True,
+                "url": url,
+                "locations": locations
+            },
+            "duplicate_check": {
+                "success": True,
+                "duplicates": []  # Would need implementation
+            },
+            "place_details": {
+                "success": True,
+                "place_id": locations[0]["id"] if locations else None,
+                "updated_fields": {}
             }
-            for location in locations
-        ]
+        }
+
+    def _create_error_response(self, url: str, error_message: str) -> Dict:
+        """Create error response"""
+        return {
+            "extracted_locations": {
+                "success": False,
+                "url": url,
+                "locations": [],
+                "error": error_message
+            },
+            "duplicate_check": {"success": False, "duplicates": []},
+            "place_details": {"success": False, "place_id": None, "updated_fields": {}}
+        }
