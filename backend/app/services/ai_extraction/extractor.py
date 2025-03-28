@@ -184,8 +184,15 @@ class LocationExtractor:
                 content = response.choices[0].message.content.strip()
                 print(f"\nRaw content: {content}")
                 
+                # Remove markdown formatting if present
+                if content.startswith('```json'):
+                    content = content.replace('```json', '').replace('```', '').strip()
+                
                 # Attempt to parse the JSON
                 locations = json.loads(content)
+                # If the response has a "locations" key, use that, otherwise use the whole response
+                if isinstance(locations, dict) and "locations" in locations:
+                    locations = locations["locations"]
                 return self._format_locations(locations)
             except json.JSONDecodeError as e:
                 print(f"JSON parsing error: {str(e)}")
