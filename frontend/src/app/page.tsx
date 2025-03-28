@@ -25,6 +25,12 @@ const destinations: DestinationCard[] = [
     description: 'Discover ancient temples and beautiful gardens',
     imageUrl: '/images/kyoto.jpg',
   },
+  {
+    id: '3',
+    title: 'Paris',
+    description: 'Explore the city of lights with its iconic landmarks and rich culture',
+    imageUrl: '/images/paris.jpg',
+  },
   // Add more destinations as needed
 ];
 
