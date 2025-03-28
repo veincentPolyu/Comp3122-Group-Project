@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import openai  
+from youtube_transcript_api import YouTubeTranscriptApi
 
 
 
@@ -43,23 +44,37 @@ class LocationExtractor:
             return self._create_error_response(url, "Invalid YouTube URL")
 
         try:
+            print(f"Extracting transcript for video ID: {video_id}")
             # Get video transcript
-            transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-            full_text = " ".join([entry['text'] for entry in transcript_list])
+            try:
+                transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+                full_text = " ".join([entry['text'] for entry in transcript_list])
+            except Exception as e:
+                print(f"Error getting transcript: {str(e)}")
+                return self._create_error_response(url, f"Failed to get video transcript: {str(e)}")
+            
+            print("Successfully extracted transcript")
             
             # Get video metadata
-            video_info = self.youtube.videos().list(
-                part="snippet",
-                id=video_id
-            ).execute()
+            try:
+                video_info = self.youtube.videos().list(
+                    part="snippet",
+                    id=video_id
+                ).execute()
 
-            if 'items' in video_info:
-                video_title = video_info['items'][0]['snippet']['title']
-                timestamp = video_info['items'][0]['snippet']['publishedAt']
-            else:
+                if 'items' in video_info and video_info['items']:
+                    video_title = video_info['items'][0]['snippet']['title']
+                    timestamp = video_info['items'][0]['snippet']['publishedAt']
+                else:
+                    video_title = "Unknown Title"
+                    timestamp = ""
+            except Exception as e:
+                print(f"Error getting video metadata: {str(e)}")
                 video_title = "Unknown Title"
                 timestamp = ""
 
+            print(f"Processing video content with title: {video_title}")
+            
             # Process with LLM
             locations = await self._process_with_llm(full_text)
             
@@ -72,6 +87,7 @@ class LocationExtractor:
             )
 
         except Exception as e:
+            print(f"Error processing YouTube video: {str(e)}")
             return self._create_error_response(url, str(e))
 
     async def extract_from_web(self, url: str) -> Dict:
