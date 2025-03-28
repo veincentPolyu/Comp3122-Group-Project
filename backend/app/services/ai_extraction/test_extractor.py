@@ -19,7 +19,7 @@ async def test_extractor():
     with open(mock_data_path, 'r') as f:
         mock_data = json.load(f)
 
-    test_url = "https://example-blog.com/tokyo-trip"
+    test_url = "https://www.gotokyo.org/en/story/guide/hanami-guide/index.html"
     test_blog_content = """
     During my amazing trip to Tokyo, I visited the famous Tsuta Japanese Soba Noodles restaurant.
     It's located in Sugamo, Toshima City, and it's the first ramen restaurant to receive a Michelin star.
