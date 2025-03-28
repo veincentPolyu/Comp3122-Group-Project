@@ -14,6 +14,17 @@ def is_youtube_url(url: str) -> bool:
     ]
     return any(re.match(pattern, url) for pattern in youtube_patterns)
 
+def is_instagram_url(url: str) -> bool:
+    """Check if the URL is an Instagram URL"""
+    instagram_patterns = [
+        r'(?:https?://)?(?:www\.)?instagram\.com/p/[\w-]+/?',  # Posts
+        r'(?:https?://)?(?:www\.)?instagram\.com/reel/[\w-]+/?',  # Reels
+        r'(?:https?://)?(?:www\.)?instagram\.com/tv/[\w-]+/?',  # IGTV
+        r'(?:https?://)?(?:www\.)?instagr\.am/p/[\w-]+/?',  # Short URLs for posts
+        r'(?:https?://)?(?:www\.)?instagr\.am/reel/[\w-]+/?'  # Short URLs for reels
+    ]
+    return any(re.match(pattern, url) for pattern in instagram_patterns)
+
 async def process_url_input(url: str = None):
     # Load environment variables
     load_dotenv()
@@ -35,7 +46,7 @@ async def process_url_input(url: str = None):
     
     # If no URL provided, ask for input
     if not url:
-        url = input("Please enter a URL (YouTube video or blog post): ").strip()
+        url = input("Please enter a URL (YouTube, Instagram, or web page): ").strip()
     
     # Validate URL format
     if not url.startswith(('http://', 'https://')):
@@ -43,7 +54,16 @@ async def process_url_input(url: str = None):
         return
     
     print(f"\nProcessing URL: {url}")
-    print(f"URL type: {'YouTube video' if is_youtube_url(url) else 'Web page'}")
+    
+    # Determine URL type
+    if is_youtube_url(url):
+        url_type = "YouTube video"
+    elif is_instagram_url(url):
+        url_type = "Instagram content"
+    else:
+        url_type = "Web page"
+        
+    print(f"URL type: {url_type}")
     
     try:
         # Process the URL
