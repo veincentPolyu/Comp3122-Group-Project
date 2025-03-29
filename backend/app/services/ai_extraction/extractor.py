@@ -11,8 +11,18 @@ from pathlib import Path
 import openai  
 from youtube_transcript_api import YouTubeTranscriptApi
 import random
+import tempfile
+import subprocess
 
-
+# Add these new imports
+try:
+    import pytubefix as pytube
+except ImportError:
+    # Fallback to regular pytube if pytubefix isn't installed
+    try:
+        import pytube
+    except ImportError:
+        pytube = None
 
 load_dotenv()
 
@@ -48,15 +58,25 @@ class LocationExtractor:
 
         try:
             print(f"Extracting transcript for video ID: {video_id}")
-            # Get video transcript
+            
+            # First try: Use YouTube Transcript API
+            transcript_text = None
             try:
                 transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
-                full_text = " ".join([entry['text'] for entry in transcript_list])
+                transcript_text = " ".join([entry['text'] for entry in transcript_list])
+                print("Successfully extracted transcript via YouTube Transcript API")
             except Exception as e:
-                print(f"Error getting transcript: {str(e)}")
-                return self._create_error_response(url, f"Failed to get video transcript: {str(e)}")
+                print(f"Error getting transcript via API: {str(e)}")
             
-            print("Successfully extracted transcript")
+            # Second try: If transcript API failed, try audio extraction and transcription
+            if not transcript_text:
+                print("Attempting audio extraction and transcription...")
+                transcript_text = await self._extract_and_transcribe_youtube_audio(video_id)
+                if transcript_text:
+                    print("Successfully transcribed YouTube audio")
+                else:
+                    print("Failed to transcribe YouTube audio")
+                    return self._create_error_response(url, "Failed to get video transcript or transcribe audio")
             
             # Get video metadata
             try:
@@ -78,8 +98,11 @@ class LocationExtractor:
 
             print(f"Processing video content with title: {video_title}")
             
+            # Create full content with both title and transcript
+            full_content = f"Title: {video_title}\n\nTranscript:\n{transcript_text}"
+            
             # Process with LLM
-            locations = await self._process_with_llm(full_text)
+            locations = await self._process_with_llm(full_content)
             
             return self._format_response(
                 url=url,
@@ -153,21 +176,28 @@ class LocationExtractor:
     async def _process_with_llm(self, text: str) -> List[Dict]:
         """Process text with GPT to extract locations"""
         prompt = """
-        You are an expert at extracting locations from text content. I'll provide you with text extracted from a webpage, social media post, or video transcript, and your task is to identify all travel-related locations mentioned in it.
+        You are an expert at extracting locations from text content. I'll provide you with text which may include:
+        
+        1. For YouTube videos: The video title and complete transcript 
+        2. For Instagram posts: Post descriptions and audio transcriptions
+        3. For websites: General webpage content
+        
+        Your task is to identify ALL travel-related locations mentioned in the content. Pay special attention to any location names mentioned in YouTube transcripts or Instagram audio.
 
-        The text may contain content in multiple languages including English, Chinese, Japanese, or others. It may also include raw JSON data or HTML fragments - try to extract meaningful location information from all of it.
-
-        Please analyze the text carefully and extract ALL locations mentioned, including:
-        - The exact name of the location
-        - The type/category of the location (e.g., temple, park, restaurant, city, attraction)
+        Please analyze ALL the text carefully and extract ALL locations mentioned, including:
+        - The exact name of the location (e.g., "Eiffel Tower", "Paris", "Le Jules Verne Restaurant")
+        - The type/category of the location (e.g., monument, city, restaurant, park, beach, etc.)
         - Any details about the location (address, opening hours, etc.)
         - Any context provided about the location
+        
+        Be thorough and look for locations in all parts of the provided text.
 
         Format your response as a JSON array of location objects with these fields:
         - name: The name of the location
         - type: The category or type of the location
         - details: Any specific details about the location (address, opening times, etc.)
         - context: Any additional context about the location from the content
+        - source: Where you found this location (for YouTube/Instagram, specify "title", "transcript", "description", "audio", or "both")
 
         Here's the text to analyze:
         {text}
@@ -499,3 +529,157 @@ class LocationExtractor:
             'Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0'
         ]
         return random.choice(user_agents)
+
+    async def _extract_and_transcribe_youtube_audio(self, video_id: str) -> str:
+        """Extract audio from YouTube video and transcribe it using Azure OpenAI"""
+        if not pytube:
+            print("PyTube or PyTubeFix is not installed. Please install with: pip install pytubefix")
+            return ""
+        
+        try:
+            with tempfile.TemporaryDirectory() as temp_dir:
+                # Download video from YouTube
+                print(f"Downloading YouTube video with ID: {video_id}")
+                youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+                yt = pytube.YouTube(youtube_url)
+                
+                # Get video info
+                try:
+                    title = yt.title
+                    print(f"Video title: {title}")
+                except:
+                    title = "Unknown"
+                
+                # Get the audio stream
+                print("Extracting audio stream")
+                audio_stream = yt.streams.filter(only_audio=True).order_by('abr').desc().first()
+                if not audio_stream:
+                    print("No audio stream found")
+                    return ""
+                
+                # Download the audio
+                print(f"Downloading audio to temporary directory: {temp_dir}")
+                audio_file_path = audio_stream.download(output_path=temp_dir)
+                print(f"Downloaded audio to: {audio_file_path}")
+                
+                # Convert to mp3 if ffmpeg is available (for format compatibility)
+                mp3_path = os.path.join(temp_dir, "audio.mp3")
+                
+                try:
+                    print("Converting audio to mp3 format")
+                    subprocess.run(
+                        ["ffmpeg", "-i", audio_file_path, "-q:a", "0", "-map", "a", mp3_path],
+                        check=True, capture_output=True, timeout=60
+                    )
+                    # Use mp3 file if conversion successful
+                    if os.path.exists(mp3_path):
+                        audio_file_path = mp3_path
+                        print(f"Converted to mp3: {mp3_path}")
+                except (subprocess.SubprocessError, FileNotFoundError) as e:
+                    print(f"FFmpeg conversion failed: {str(e)}. Using original audio file.")
+                
+                # Check file size - if over 25MB, we need to split it
+                file_size = os.path.getsize(audio_file_path) / (1024 * 1024)  # Convert to MB
+                
+                if file_size > 25:
+                    print(f"Audio file is {file_size:.2f} MB, splitting into segments for transcription")
+                    return await self._process_large_audio_file(audio_file_path, temp_dir)
+                else:
+                    # Transcribe using Azure OpenAI
+                    print("Transcribing audio with Azure OpenAI")
+                    
+                    try:
+                        client = openai.AzureOpenAI(
+                            api_key=openai.api_key,
+                            api_version="2023-05-15",
+                            azure_endpoint=self.base_url
+                        )
+                        
+                        with open(audio_file_path, "rb") as audio_file:
+                            transcript = client.audio.transcriptions.create(
+                                model="whisper-1",
+                                file=audio_file
+                            )
+                        
+                        transcript_text = transcript.text
+                        print(f"Successfully transcribed {len(transcript_text)} characters")
+                        return transcript_text
+                        
+                    except Exception as e:
+                        print(f"Transcription error: {str(e)}")
+                        return ""
+                
+        except Exception as e:
+            print(f"Error in YouTube audio extraction: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return ""
+
+    async def _process_large_audio_file(self, audio_file_path: str, temp_dir: str) -> str:
+        """Split and process large audio files that exceed OpenAI's size limits"""
+        try:
+            # Create segments directory
+            segments_dir = os.path.join(temp_dir, "segments")
+            os.makedirs(segments_dir, exist_ok=True)
+            
+            # Use ffmpeg to split the audio into 5-minute segments
+            segment_length = 300  # 5 minutes in seconds
+            
+            try:
+                print(f"Splitting audio into {segment_length}-second segments")
+                subprocess.run([
+                    "ffmpeg", "-i", audio_file_path, 
+                    "-f", "segment", "-segment_time", str(segment_length),
+                    "-c", "copy", os.path.join(segments_dir, "segment%03d.mp3")
+                ], check=True, capture_output=True, timeout=120)
+            except Exception as e:
+                print(f"Error splitting audio: {str(e)}")
+                return ""
+            
+            # Get all segment files
+            segment_files = sorted([
+                os.path.join(segments_dir, f) for f in os.listdir(segments_dir)
+                if os.path.isfile(os.path.join(segments_dir, f)) and f.endswith('.mp3')
+            ])
+            
+            if not segment_files:
+                print("No segment files created")
+                return ""
+            
+            print(f"Created {len(segment_files)} audio segments")
+            
+            # Process each segment
+            transcripts = []
+            
+            for i, segment_file in enumerate(segment_files):
+                print(f"Processing segment {i+1}/{len(segment_files)}")
+                
+                try:
+                    client = openai.AzureOpenAI(
+                        api_key=openai.api_key,
+                        api_version="2023-05-15",
+                        azure_endpoint=self.base_url
+                    )
+                    
+                    with open(segment_file, "rb") as audio_file:
+                        transcript = client.audio.transcriptions.create(
+                            model="whisper-1",
+                            file=audio_file
+                        )
+                    
+                    if transcript.text:
+                        transcripts.append(transcript.text)
+                        print(f"Segment {i+1} transcribed: {len(transcript.text)} characters")
+                    
+                except Exception as e:
+                    print(f"Error transcribing segment {i+1}: {str(e)}")
+            
+            # Combine all transcripts
+            full_transcript = " ".join(transcripts)
+            print(f"Combined transcript length: {len(full_transcript)} characters")
+            
+            return full_transcript
+            
+        except Exception as e:
+            print(f"Error processing large audio file: {str(e)}")
+            return ""
