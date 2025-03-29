@@ -1,8 +1,8 @@
 import json
 import asyncio
 from pathlib import Path
-# Import directly since we're in the same directory
-from extractor import LocationExtractor
+# Fix import path
+from .extractor import LocationExtractor
 import os
 from dotenv import load_dotenv  # Add this import
 
@@ -87,4 +87,4 @@ async def test_extractor():
             test_file_path.unlink()
 
 if __name__ == "__main__":
-    asyncio.run(test_extractor()) 
+    asyncio.run(test_extractor())

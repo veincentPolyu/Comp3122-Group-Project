@@ -10,8 +10,9 @@ import os
 from pathlib import Path
 import openai  
 from youtube_transcript_api import YouTubeTranscriptApi
-
-
+from flask import jsonify, request
+from flask_restful import Resource
+import asyncio
 
 load_dotenv()
 
@@ -287,4 +288,68 @@ class LocationExtractor:
             },
             "duplicate_check": {"success": False, "duplicates": []},
             "place_details": {"success": False, "place_id": None, "updated_fields": {}}
+        }
+
+    def get_api_resource(self):
+        """Return a Flask-RESTful Resource class for this extractor"""
+        extractor = self
+        
+        class LocationExtractorAPI(Resource):
+            def post(self):
+                try:
+                    url = request.json.get('url')
+                    if not url:
+                        return {'error': 'URL is required'}, 400
+
+                    # Run async operation in event loop
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    result = loop.run_until_complete(extractor.process_url(url))
+                    loop.close()
+                    
+                    return result, 200
+                    
+                except Exception as e:
+                    return {'error': str(e)}, 500
+
+        return LocationExtractorAPI
+
+    def get_swagger_spec(self):
+        """Return Swagger/OpenAPI specification"""
+        return {
+            "paths": {
+                "/api/extract": {
+                    "post": {
+                        "summary": "Extract locations from URL",
+                        "requestBody": {
+                            "required": True,
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "url": {
+                                                "type": "string",
+                                                "format": "uri",
+                                                "description": "URL to extract locations from"
+                                            }
+                                        },
+                                        "required": ["url"]
+                                    }
+                                }
+                            }
+                        },
+                        "responses": {
+                            "200": {
+                                "description": "Successful extraction",
+                                "content": {
+                                    "application/json": {
+                                        "schema": { "$ref": "#/components/schemas/ExtractionResponse" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
