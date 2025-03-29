@@ -6,6 +6,9 @@ from extractor import LocationExtractor
 import sys
 import re
 
+# Add the current directory to the path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 def is_youtube_url(url: str) -> bool:
     """Check if the URL is a YouTube URL"""
     youtube_patterns = [
@@ -87,10 +90,32 @@ async def process_url_input(url: str = None):
     except Exception as e:
         print(f"Error during extraction: {str(e)}")
 
-def main():
-    # Check if URL was provided as command line argument
-    url = sys.argv[1] if len(sys.argv) > 1 else None
-    asyncio.run(process_url_input(url))
+async def main():
+    # Initialize extractor
+    extractor = LocationExtractor(
+        youtube_api_key="your_key_here", 
+        openai_api_key="your_key_here"
+    )
+    
+    # Get URL from command line argument
+    if len(sys.argv) > 1:
+        url = sys.argv[1]
+        print(f"Processing URL: {url}")
+        
+        # Process the URL
+        result = await extractor.process_url(url)
+        
+        # Pretty print the results
+        if result.get("extracted_locations", {}).get("success", False):
+            locations = result.get("extracted_locations", {}).get("locations", [])
+            print(f"Found {len(locations)} locations:")
+            for loc in locations:
+                print(f"- {loc.get('name')} ({loc.get('category')}): {loc.get('description')}")
+        else:
+            error = result.get("extracted_locations", {}).get("error", "Unknown error")
+            print(f"Error: {error}")
+    else:
+        print("Please provide a URL to process")
 
 if __name__ == "__main__":
-    main() 
+    asyncio.run(main()) 
