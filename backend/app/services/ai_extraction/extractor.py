@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import openai  
+import whisper
 from youtube_transcript_api import YouTubeTranscriptApi
 import random
 import tempfile
@@ -67,6 +68,7 @@ class LocationExtractor:
                 print("Successfully extracted transcript via YouTube Transcript API")
             except Exception as e:
                 print(f"Error getting transcript via API: {str(e)}")
+                print("Falling back to audio extraction and transcription...")
             
             # Second try: If transcript API failed, try audio extraction and transcription
             if not transcript_text:
@@ -77,7 +79,7 @@ class LocationExtractor:
                 else:
                     print("Failed to transcribe YouTube audio")
                     return self._create_error_response(url, "Failed to get video transcript or transcribe audio")
-            
+
             # Get video metadata
             try:
                 video_info = self.youtube.videos().list(
@@ -531,7 +533,7 @@ class LocationExtractor:
         return random.choice(user_agents)
 
     async def _extract_and_transcribe_youtube_audio(self, video_id: str) -> str:
-        """Extract audio from YouTube video and transcribe it using Azure OpenAI"""
+        """Extract audio from YouTube video and transcribe it using local Whisper model"""
         if not pytube:
             print("PyTube or PyTubeFix is not installed. Please install with: pip install pytubefix")
             return ""
@@ -565,49 +567,64 @@ class LocationExtractor:
                 # Convert to mp3 if ffmpeg is available (for format compatibility)
                 mp3_path = os.path.join(temp_dir, "audio.mp3")
                 
+                # Get FFmpeg path from environment
+                ffmpeg_binary = os.getenv('FFMPEG_BINARY', 'ffmpeg')
+                
                 try:
                     print("Converting audio to mp3 format")
-                    subprocess.run(
-                        ["ffmpeg", "-i", audio_file_path, "-q:a", "0", "-map", "a", mp3_path],
-                        check=True, capture_output=True, timeout=60
-                    )
+                    # Add more detailed FFmpeg command with explicit codec and format
+                    process = subprocess.run([
+                        ffmpeg_binary, 
+                        "-i", audio_file_path,  # Input file
+                        "-acodec", "libmp3lame",  # Use MP3 codec
+                        "-ab", "192k",  # Bitrate
+                        "-ar", "44100",  # Sample rate
+                        "-y",  # Overwrite output file
+                        mp3_path
+                    ], capture_output=True, text=True, check=False)
+                    
+                    if process.returncode != 0:
+                        print(f"FFmpeg conversion error:\nSTDOUT: {process.stdout}\nSTDERR: {process.stderr}")
+                        # Try alternative conversion for M4A files
+                        if audio_file_path.lower().endswith('.m4a'):
+                            print("Attempting alternative conversion for M4A file...")
+                            process = subprocess.run([
+                                ffmpeg_binary,
+                                "-i", audio_file_path,
+                                "-codec:a", "libmp3lame",
+                                "-qscale:a", "2",
+                                mp3_path
+                            ], capture_output=True, text=True, check=True)
+                    
                     # Use mp3 file if conversion successful
-                    if os.path.exists(mp3_path):
+                    if os.path.exists(mp3_path) and os.path.getsize(mp3_path) > 0:
                         audio_file_path = mp3_path
                         print(f"Converted to mp3: {mp3_path}")
-                except (subprocess.SubprocessError, FileNotFoundError) as e:
-                    print(f"FFmpeg conversion failed: {str(e)}. Using original audio file.")
+                    else:
+                        print("MP3 conversion failed, using original audio file")
                 
-                # Check file size - if over 25MB, we need to split it
-                file_size = os.path.getsize(audio_file_path) / (1024 * 1024)  # Convert to MB
+                except subprocess.SubprocessError as e:
+                    print(f"FFmpeg conversion failed: {str(e)}")
+                    if hasattr(e, 'stderr'):
+                        print(f"FFmpeg error output: {e.stderr}")
+                except Exception as e:
+                    print(f"Unexpected error during conversion: {str(e)}")
+                    print("Using original audio file")
+
+                # Load Whisper model
+                print("Loading Whisper model...")
+                model = whisper.load_model("base")  # You can choose different model sizes: tiny, base, small, medium, large
                 
-                if file_size > 25:
-                    print(f"Audio file is {file_size:.2f} MB, splitting into segments for transcription")
-                    return await self._process_large_audio_file(audio_file_path, temp_dir)
-                else:
-                    # Transcribe using Azure OpenAI
-                    print("Transcribing audio with Azure OpenAI")
-                    
-                    try:
-                        client = openai.AzureOpenAI(
-                            api_key=openai.api_key,
-                            api_version="2023-05-15",
-                            azure_endpoint=self.base_url
-                        )
-                        
-                        with open(audio_file_path, "rb") as audio_file:
-                            transcript = client.audio.transcriptions.create(
-                                model="whisper-1",
-                                file=audio_file
-                            )
-                        
-                        transcript_text = transcript.text
-                        print(f"Successfully transcribed {len(transcript_text)} characters")
-                        return transcript_text
-                        
-                    except Exception as e:
-                        print(f"Transcription error: {str(e)}")
-                        return ""
+                # Transcribe using local Whisper
+                print("Transcribing audio with local Whisper model")
+                try:
+                    result = model.transcribe(audio_file_path)
+                    transcript_text = result["text"]
+                    print(f"Successfully transcribed {len(transcript_text)} characters")
+                    return transcript_text
+                except Exception as e:
+                    print(f"Transcription error: {str(e)}")
+                    return ""
                 
         except Exception as e:
             print(f"Error in YouTube audio extraction: {str(e)}")
@@ -616,7 +633,7 @@ class LocationExtractor:
             return ""
 
     async def _process_large_audio_file(self, audio_file_path: str, temp_dir: str) -> str:
-        """Split and process large audio files that exceed OpenAI's size limits"""
+        """Split and process large audio files using local Whisper model"""
         try:
             # Create segments directory
             segments_dir = os.path.join(temp_dir, "segments")
@@ -648,6 +665,10 @@ class LocationExtractor:
             
             print(f"Created {len(segment_files)} audio segments")
             
+            # Load Whisper model once for all segments
+            print("Loading Whisper model...")
+            model = whisper.load_model("base")
+            
             # Process each segment
             transcripts = []
             
@@ -655,21 +676,10 @@ class LocationExtractor:
                 print(f"Processing segment {i+1}/{len(segment_files)}")
                 
                 try:
-                    client = openai.AzureOpenAI(
-                        api_key=openai.api_key,
-                        api_version="2023-05-15",
-                        azure_endpoint=self.base_url
-                    )
-                    
-                    with open(segment_file, "rb") as audio_file:
-                        transcript = client.audio.transcriptions.create(
-                            model="whisper-1",
-                            file=audio_file
-                        )
-                    
-                    if transcript.text:
-                        transcripts.append(transcript.text)
-                        print(f"Segment {i+1} transcribed: {len(transcript.text)} characters")
+                    result = model.transcribe(segment_file)
+                    if result["text"]:
+                        transcripts.append(result["text"])
+                        print(f"Segment {i+1} transcribed: {len(result['text'])} characters")
                     
                 except Exception as e:
                     print(f"Error transcribing segment {i+1}: {str(e)}")
