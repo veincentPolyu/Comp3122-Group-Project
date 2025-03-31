@@ -3,34 +3,9 @@
   "info": {
     "title": "Location Extractor API",
     "version": "1.0.0",
-    "description": "API for extracting location information from URLs and testing functionality"
+    "description": "API for extracting location information from URLs"
   },
   "paths": {
-    "/api/test": {
-      "get": {
-        "summary": "Run location extractor test",
-        "responses": {
-          "200": {
-            "description": "Successful test",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "string"
-                    },
-                    "result": {
-                      "type": "object"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/extract": {
       "post": {
         "summary": "Extract locations from provided URL",
