@@ -10,14 +10,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <Script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places,marker&v=beta`}
           strategy="beforeInteractive"
         />
       </head>
-      <body suppressHydrationWarning style={{ margin: 0, padding: 0 }}>
+      <body suppressHydrationWarning={true} style={{ margin: 0, padding: 0 }}>
         <AppTheme>
           <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <AppAppBar />

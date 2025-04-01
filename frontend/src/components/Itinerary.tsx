@@ -73,6 +73,11 @@ const ItineraryItem: React.FC<{
                 <Typography variant="h6" gutterBottom>
                     {location.name}
                 </Typography>
+                {location.photos && location.photos.length > 0 && (
+                    <Box sx={{ mt: 1, mb: 2 }}>
+                        <img src={location.photos[0]} alt={location.name} style={{ width: '100%', height: 'auto', borderRadius: '8px' }} />
+                    </Box>
+                )}
                 <Typography variant="body2" color="text.secondary">
                     Address: {location.address}
                 </Typography>
@@ -156,7 +161,6 @@ const PrevArrow = ({ onClick }: { onClick?: () => void }) => (
 // Main Itinerary component
 const Itinerary: React.FC<ItineraryProps> = ({ locations, onLocationClick }) => {
     const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
-    const [open, setOpen] = React.useState(true);
 
     // Group locations by category
     React.useEffect(() => {
