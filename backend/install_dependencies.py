@@ -15,6 +15,7 @@ def install_dependencies():
         "beautifulsoup4", # For HTML parsing
         "google-api-python-client", # For YouTube Data API
         "python-dotenv",  # For environment variables
+        "whisper-openai", # For local audio transcription
     ]
     
     print("Installing required Python packages...")
@@ -45,4 +46,4 @@ def install_dependencies():
     print("\nAll dependencies installed! You can now use the LocationExtractor.")
 
 if __name__ == "__main__":
-    install_dependencies() 
+    install_dependencies()

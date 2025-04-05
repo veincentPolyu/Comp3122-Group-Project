@@ -1,0 +1,447 @@
+{
+  "extracted_locations": {
+    "success": true,
+    "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+    "locations": [
+      {
+        "id": "loc1",
+        "name": "Tokyo",
+        "address": "",
+        "category": "city",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "World's largest city and heart of Japan Over 14 million people call this Urban Jungle their home.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "city"
+        ]
+      },
+      {
+        "id": "loc2",
+        "name": "Shinjuku Station",
+        "address": "",
+        "category": "transportation hub",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "An average of 4 million people pass through daily. Major station in Tokyo.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "transportation hub"
+        ]
+      },
+      {
+        "id": "loc3",
+        "name": "Shinjuku",
+        "address": "",
+        "category": "district",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Heart of the city, vibrant nightlife. Recommended area to stay in Tokyo.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "district"
+        ]
+      },
+      {
+        "id": "loc4",
+        "name": "Shibuya",
+        "address": "",
+        "category": "district",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Another heart of the city, known for nightlife. Recommended area to stay in Tokyo.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "district"
+        ]
+      },
+      {
+        "id": "loc5",
+        "name": "Asakusa",
+        "address": "",
+        "category": "district",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Area along the Sumida River. Great spot for early risers to check out Sensoji Temple.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "district"
+        ]
+      },
+      {
+        "id": "loc6",
+        "name": "Sensoji Temple",
+        "address": "",
+        "category": "temple",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Tokyo's oldest and most popular temple. Best visited early or late at night to avoid crowds.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "temple"
+        ]
+      },
+      {
+        "id": "loc7",
+        "name": "Sumida River",
+        "address": "",
+        "category": "river",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Lined with sakura trees, beautiful in spring. 10-minute walk from Sensoji Temple.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "river"
+        ]
+      },
+      {
+        "id": "loc8",
+        "name": "Tokyo Skytree",
+        "address": "",
+        "category": "tower",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": 1,
+        "photos": [],
+        "description": "Tallest tower in the world at 280 ft. Offers great views of Tokyo; costs $20 to go to the top.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "tower"
+        ]
+      },
+      {
+        "id": "loc9",
+        "name": "Shibuya Scramble",
+        "address": "",
+        "category": "crosswalk",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "World's busiest crosswalk. 3,000 people cross every 2 minutes; a must-do in Tokyo.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "crosswalk"
+        ]
+      },
+      {
+        "id": "loc10",
+        "name": "Tokyo Imperial Gardens",
+        "address": "",
+        "category": "garden",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [
+          "Hours: Open from 9 a"
+        ],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Open from 9 a.m. A traditional garden in modern Tokyo, a refuge from crowds.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "garden"
+        ]
+      },
+      {
+        "id": "loc11",
+        "name": "Kitanomaru Park",
+        "address": "",
+        "category": "park",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "7-minute walk from Tokyo Station. Adjacent to Tokyo Imperial Gardens.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "park"
+        ]
+      },
+      {
+        "id": "loc12",
+        "name": "Yasukuni Shrine",
+        "address": "",
+        "category": "shrine",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Known for its beautiful location. Controversial history but worth visiting.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "shrine"
+        ]
+      },
+      {
+        "id": "loc13",
+        "name": "Akihabara",
+        "address": "",
+        "category": "district",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Famous for anime and otaku culture. 20-minute train ride from Yasukuni Shrine.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "district"
+        ]
+      },
+      {
+        "id": "loc14",
+        "name": "Omoide Yokocho",
+        "address": "",
+        "category": "alleyway",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "2 minutes walk from Shinjuku East exit. Great place for drinks and Yaki Tori.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "alleyway"
+        ]
+      },
+      {
+        "id": "loc15",
+        "name": "Kabukicho",
+        "address": "",
+        "category": "district",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Japan's largest red light district. Best visited at night for neon lights.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "district"
+        ]
+      },
+      {
+        "id": "loc16",
+        "name": "Mount Fuji",
+        "address": "",
+        "category": "mountain",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Visible from Tokyo Skytree on clear days. Iconic mountain near Tokyo.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "mountain"
+        ]
+      },
+      {
+        "id": "loc17",
+        "name": "Narita Airport",
+        "address": "",
+        "category": "airport",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "About an hour away from Tokyo. Most travelers to Tokyo will arrive here.",
+        "source": {
+          "url": "https://www.youtube.com/watch?v=0MQKLUkAUf8",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-31T18:29:58Z"
+        },
+        "tags": [
+          "airport"
+        ]
+      }
+    ]
+  },
+  "duplicate_check": {
+    "success": true,
+    "duplicates": []
+  },
+  "place_details": {
+    "success": true,
+    "place_id": "loc1",
+    "updated_fields": {
+      "business_hours": [],
+      "busy_periods": []
+    }
+  }
+}

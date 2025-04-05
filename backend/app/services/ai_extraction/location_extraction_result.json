@@ -1,0 +1,645 @@
+{
+  "extracted_locations": {
+    "success": true,
+    "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+    "locations": [
+      {
+        "id": "loc1",
+        "name": "Japan",
+        "address": "",
+        "category": "country",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None The land of the rising sun, known for its diverse and unique places.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "country"
+        ]
+      },
+      {
+        "id": "loc2",
+        "name": "Tokyo",
+        "address": "",
+        "category": "city",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None The final destination of the two-week journey.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "city"
+        ]
+      },
+      {
+        "id": "loc3",
+        "name": "Osaka",
+        "address": "",
+        "category": "city",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Known as the kitchen of Japan. The starting point of the journey, famous for its food and nightlife.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "city"
+        ]
+      },
+      {
+        "id": "loc4",
+        "name": "Koyasan",
+        "address": "",
+        "category": "temple town",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Nestled away in the mountains of Wakayama, center of Japan's Shingon Buddhism. A secluded temple town where the travelers stayed overnight at a Buddhist temple.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "temple town"
+        ]
+      },
+      {
+        "id": "loc5",
+        "name": "Nara",
+        "address": "",
+        "category": "city",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None Famous for Nara Park and its deer population.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "city"
+        ]
+      },
+      {
+        "id": "loc6",
+        "name": "Nara Park",
+        "address": "",
+        "category": "park",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None Known for the many deer that roam the area.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "park"
+        ]
+      },
+      {
+        "id": "loc7",
+        "name": "Kyoto",
+        "address": "",
+        "category": "city",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "The ancient capital of Japan, rich in culture and traditions. A stop in the itinerary after Nara.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "city"
+        ]
+      },
+      {
+        "id": "loc8",
+        "name": "Kanazawa",
+        "address": "",
+        "category": "city",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Renowned for its gold leaf production and one of the three great gardens in Japan. A stop in the itinerary after Kyoto.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "city"
+        ]
+      },
+      {
+        "id": "loc9",
+        "name": "Takayama",
+        "address": "",
+        "category": "mountainous region",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None Known for exploring the old town and relaxing at a Japanese onsen.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "mountainous region"
+        ]
+      },
+      {
+        "id": "loc10",
+        "name": "Dotonbori",
+        "address": "",
+        "category": "area",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "A busy tourist spot in downtown Osaka known for neon lights and food options. The area explored for food after arriving in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "area"
+        ]
+      },
+      {
+        "id": "loc11",
+        "name": "Ichiran ramen",
+        "address": "",
+        "category": "restaurant",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Famous for its tonkotsu ramen. A popular dining choice in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "restaurant"
+        ]
+      },
+      {
+        "id": "loc12",
+        "name": "Namba Yasaka Shrine",
+        "address": "",
+        "category": "shrine",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Famous for its lion head stage. Visited the next day in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "shrine"
+        ]
+      },
+      {
+        "id": "loc13",
+        "name": "Osaka Castle",
+        "address": "",
+        "category": "castle",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "One of Japan's most famous landmarks. A significant historical site visited in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "castle"
+        ]
+      },
+      {
+        "id": "loc14",
+        "name": "Amerika-mura",
+        "address": "",
+        "category": "neighborhood",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None Known for being the center of Japanese youth culture in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "neighborhood"
+        ]
+      },
+      {
+        "id": "loc15",
+        "name": "Umeda Sky Building",
+        "address": "",
+        "category": "building",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Has a famous observation deck providing views over Osaka. Visited for a better view of the city.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "building"
+        ]
+      },
+      {
+        "id": "loc16",
+        "name": "Okaru",
+        "address": "",
+        "category": "restaurant",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Known for Okonomiyaki, savory Japanese pancakes. Favorite Okonomiyaki shop in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "restaurant"
+        ]
+      },
+      {
+        "id": "loc17",
+        "name": "Don Quijote",
+        "address": "",
+        "category": "discount store",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Known for its Ferris wheel in Osaka. A unique shopping experience in Osaka.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "discount store"
+        ]
+      },
+      {
+        "id": "loc18",
+        "name": "Koyasan World Heritage ticket",
+        "address": "",
+        "category": "ticket",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None Covers the entire trip to Koyasan.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "ticket"
+        ]
+      },
+      {
+        "id": "loc19",
+        "name": "Saizen-in",
+        "address": "",
+        "category": "temple lodging",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Traditional Japanese rooms with tatami floors. Where the travelers stayed in Koyasan.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "temple lodging"
+        ]
+      },
+      {
+        "id": "loc20",
+        "name": "Danjo Garan",
+        "address": "",
+        "category": "temple complex",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Houses around 20 temples and buildings including Konpo Daito. First place visited in Koyasan.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "temple complex"
+        ]
+      },
+      {
+        "id": "loc21",
+        "name": "Daimon Gate",
+        "address": "",
+        "category": "gate",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "None Original entrance to Koyasan and end destination for the Choishi Michi pilgrimage trail.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "gate"
+        ]
+      },
+      {
+        "id": "loc22",
+        "name": "Kongobu-ji",
+        "address": "",
+        "category": "head temple",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Head temple of Shingon Buddhism in Koyasan. Explored its many halls and corridors.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "head temple"
+        ]
+      },
+      {
+        "id": "loc23",
+        "name": "Banryutei",
+        "address": "",
+        "category": "rock garden",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Japan's largest rock garden. Resembles a pair of dragons emerging from a sea of clouds.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "rock garden"
+        ]
+      },
+      {
+        "id": "loc24",
+        "name": "Okunoin Cemetery",
+        "address": "",
+        "category": "cemetery",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Japan's largest cemetery, stretching over 2 km. Home to over 200,000 graves, including the Kobo Daishi Mausoleum.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "cemetery"
+        ]
+      },
+      {
+        "id": "loc25",
+        "name": "Todai-ji",
+        "address": "",
+        "category": "temple",
+        "coordinates": {
+          "lat": null,
+          "lng": null
+        },
+        "business_hours": [],
+        "busy_periods": [],
+        "rating": null,
+        "price_level": null,
+        "photos": [],
+        "description": "Houses the Nara Daibatsu, the largest bronze statue in the world. The first place visited in Nara.",
+        "source": {
+          "url": "https://youtu.be/IuTDuvYr7f0?si=-zHyRhCw59V7Tm_F",
+          "type": "video",
+          "title": "",
+          "timestamp": "2025-03-30T10:41:00Z"
+        },
+        "tags": [
+          "temple"
+        ]
+      }
+    ]
+  },
+  "duplicate_check": {
+    "success": true,
+    "duplicates": []
+  },
+  "place_details": {
+    "success": true,
+    "place_id": "loc1",
+    "updated_fields": {
+      "business_hours": [],
+      "busy_periods": []
+    }
+  }
+}
