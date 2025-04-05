@@ -1,8 +1,18 @@
 from fastapi import FastAPI, HTTPException, Query, Body
 from pydantic import BaseModel, constr, validator
-from typing import Optional, List
+from typing import Optional, List, Dict
 from urllib.parse import unquote
 from mongodb_handler import MongoDBHandler
+import os
+import asyncio
+from dotenv import load_dotenv
+# Import the LocationExtractor
+import sys
+sys.path.append('../backend')
+from app.services.ai_extraction.extractor import LocationExtractor
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI(
     title="Travel Planner API",
@@ -33,6 +43,17 @@ class UpdateRating(BaseModel):  # Renamed from UpdateEntry
                 "rating": "5",
                 "locations": ["Tokyo", "Kyoto"],
                 "tags": ["travel", "relax"]
+            }
+        }
+
+# Add new request model
+class ExtractionRequest(BaseModel):
+    url: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "url": "https://www.youtube.com/watch?v=example"
             }
         }
 
@@ -81,6 +102,24 @@ async def update_video_rating(
         raise HTTPException(status_code=404 if error == "Document not found" else 500, 
                           detail=f"Update error: {error}")
     return updated_doc
+
+@app.post("/extract-locations/", tags=["Extraction"])
+async def extract_locations(request: ExtractionRequest):
+    """Extract locations from URL using LocationExtractor"""
+    try:
+        # Initialize extractor
+        extractor = LocationExtractor(
+            youtube_api_key=os.getenv("YOUTUBE_API_KEY"),
+            openai_api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        # Process URL and get results
+        result = await extractor.process_url(request.url)
+        
+        return result
+    except Exception as e:
+        print(f"Error processing request: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
