@@ -59,8 +59,8 @@ export default function AppAppBar() {
         >
           <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', px: 0 }}>
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <Button variant="text" color="info" size="small">
-                Features
+              <Button variant="text" color="info" size="small" href="/">
+                Home
               </Button>
               <Button variant="text" color="info" size="small">
                 Testimonials
@@ -112,7 +112,7 @@ export default function AppAppBar() {
                   </IconButton>
                 </Box>
 
-                <MenuItem>Features</MenuItem>
+                <MenuItem>Home</MenuItem>
                 <MenuItem>Testimonials</MenuItem>
                 <MenuItem>Highlights</MenuItem>
                 <Divider sx={{ my: 3 }} />

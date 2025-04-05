@@ -1,3 +1,5 @@
+import { LocationReview } from "./suggestedURL";
+
 export interface Coordinates {
   lat: number;
   lng: number;
@@ -24,5 +26,6 @@ export interface Location {
   description?: string;
   source?: ContentSource;
   tags?: string[];
+  reviews?: LocationReview[];
   created_at: string;
 }
