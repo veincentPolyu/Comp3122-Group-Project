@@ -17,19 +17,19 @@ const destinations: DestinationCard[] = [
     id: '1',
     title: 'Tokyo',
     description: 'Experience the blend of tradition and future in Japan\'s capital',
-    imageUrl: '/images/tokyo.jpg',
+    imageUrl: 'https://i.pinimg.com/736x/99/a5/f2/99a5f20fdee57e12010f055840eda500.jpg',
   },
   {
     id: '2',
     title: 'Kyoto',
     description: 'Discover ancient temples and beautiful gardens',
-    imageUrl: '/images/kyoto.jpg',
+    imageUrl: 'https://i.pinimg.com/736x/ee/78/44/ee7844c2fdfaa48dd7ddf978acc5fd30.jpg',
   },
   {
     id: '3',
     title: 'Paris',
     description: 'Explore the city of lights with its iconic landmarks and rich culture',
-    imageUrl: '/images/paris.jpg',
+    imageUrl: 'https://i.pinimg.com/736x/be/08/d9/be08d9d7b0d57f9102f8d6ec3f9e2a0e.jpg',
   },
   // Add more destinations as needed
 ];
